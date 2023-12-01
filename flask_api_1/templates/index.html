@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Prime</title>
+</head>
+
+<body>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box1 {
+            height: 40%;
+            width: 40%;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .inputSection {
+            height: 30%;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 3px;
+        }
+
+        .inputSection input {
+            height: 100%;
+            outline: none;
+            padding-left: 13px;
+        }
+
+        .inputSection button {
+            height: 100%;
+        }
+    </style>
+
+    <div class="container">
+        <div class="box1">
+            <div class="inputSection">
+                <input type="text" placeholder="Enter Number">
+                <button onclick="submitButton()">Submit</button>
+
+                <div class="answer">
+                    Answer : <span id="ans"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const submitButton = async () => {
+            const num = document.querySelector(".inputSection input").value;
+            console.log(num);
+
+            if(num.trim().length == 0) {
+                console.log("error");
+                return;
+            }
+
+            const response = await fetch(`http://localhost:8080/checkPrime/${num}`);
+            response.text().then((v)=>{
+                document.querySelector("#ans").innerHTML = v;
+            })
+        }   
+    </script>
+
+</body>
+
+</html>
