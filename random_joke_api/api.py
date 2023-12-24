@@ -21,7 +21,7 @@ def one_liner() :
 
 @app.route("/get-context-joke")
 def get_context_joke():
-    pass
+    return "Working on... <a href='/'>Back</a>"
 
 @app.route("/get-joke-list")
 def joke_list():

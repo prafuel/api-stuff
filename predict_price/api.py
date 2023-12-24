@@ -5,7 +5,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-with open("dtr.pkl", "rb") as file:
+with open("./predict_price/dtr.pkl", "rb") as file:
     model = pickle.load(file)
 
 @app.route("/", methods=['get','post'])
