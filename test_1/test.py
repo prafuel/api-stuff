@@ -7,10 +7,9 @@ name = "bridge"
 path = "./bridge.jpg"
 
 data = {
-    "name" : name,
-    "img" : path
+    "user" : "give me python code for addition of 2 number"
 }
 
-response = requests.post(url,data=data)
+response = requests.post(url,json=data)
 
-print(response.text())
+print(response.text)

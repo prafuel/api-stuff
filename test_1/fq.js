@@ -7,8 +7,7 @@ const path = "./bridge.jpg";
 const sendData = async (name,path) => {
 
     const data = {
-        "name": name,
-        "path": path
+        "user" : "python code for addition of 2 number"
     }
 
     const res = await fetch(url, {
