@@ -1,4 +1,3 @@
-
 import pickle
 import pandas as pd
 import numpy as np
@@ -6,14 +5,14 @@ import json
 from flask import Flask, request
 from flask_cors import CORS
 
-ev_df = pd.read_csv('imp_ev_col.csv')
-img_links = pd.read_csv("images.csv")
+ev_df = pd.read_csv('./datasets/imp_ev_col.csv')
+img_links = pd.read_csv("./datasets/images.csv")
 
 # to predict range
-rf_range_model = pickle.load(open("rf_range_predict.pkl", "rb"))
+rf_range_model = pickle.load(open("./models/rf_range_predict.pkl", "rb"))
 
 # to predict top speed
-rf_speed_model = pickle.load(open("rf_speed_predict.pkl", "rb"))
+rf_speed_model = pickle.load(open("./models/rf_speed_predict.pkl", "rb"))
 
 # standard format to output data response
 def output_format(output) -> dict:
@@ -29,35 +28,31 @@ def make_prediction(model, *args) -> int:
 
 # routes
 route_dict = {
-    "range" : "Electric Range",
-    "speed" : "Top Speed",
+    "range" : ["Electric Range", rf_range_model],
+    "speed" : ["Top Speed", rf_speed_model],
 }
 
 
 app = Flask(__name__)
 CORS(app)
 
-
-@app.route("/")
-def main():
-    return "Flask Server"
-
-
 @app.route("/predict/<key>", methods=['post'])
 def get_range(key: str):
 
     # route
-    try:
-        route = route_dict[key]
-    except Exception as e:
-        return output_format(404)
+    try: route = route_dict[key][0]
+    except Exception as e: 
+        return output_format(404) # BAD REQUEST -> NO ROUTE FOUND
 
     # get data from request
     requested_data = request.json
-    # parameter to predict range => speed, battery, weight
+    # parameter to predict 1. range => speed, battery, weight, 2. speed => range, battery, weight
     param = list(requested_data.values())
 
-    result = make_prediction(rf_range_model, *param)
+    # model for prediction
+    model = route_dict[key][1]
+
+    result = make_prediction(model, *param)
 
     # Acceleration, speed, range, battery, weight
     data = ev_df[ev_df[route] >= result].reset_index(drop=True)
@@ -72,6 +67,7 @@ def get_range(key: str):
             "id": str(img['id'][i]),
             "brand": img['Brand'][i],
             "link": img['link'][i],
+
             "acceleration": str(data['Acceleration 0 - 100 km/h'][i]),
             "speed": str(data['Top Speed'][i]),
             "range": str(data['Electric Range'][i]),
@@ -87,6 +83,11 @@ def get_range(key: str):
             'filter_list': json.dumps(filter_list)
         }
     )
+
+
+@app.route("/")
+def main():
+    return "Flask Server"
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
